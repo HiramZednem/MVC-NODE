@@ -1,19 +1,19 @@
+const { listenerCount } = require('./userModel');
 var userService = require('./userServices');
 
 var createUserControllerFunc = async (req, res) =>  {
+    var result = null;
     try {
-    console.log(req.body);
-    var status = await userService.createUserDBService(req.body);
-    console.log(status);
+        result = await userService.createUserDBService(req.body);
+        if (result.status) {
+            res.send({ "status": false, "message": "Error al crear un usuario" });
+        } else {
+            res.send({ "status": true, "message": "Usuario creado" });
+        }
 
-    if (status) {
-        res.send({ "status": true, "message": "Usuario creado" });
-    } else {
-        res.send({ "status": false, "message": "Error creando usuario" });
-    }
-    }
-    catch(err) {
-        console.log(err);
+    } catch (error) {
+        console.log(error);
+        res.send({ "status": false, "message": error.msg });
     }
 }
 
@@ -33,4 +33,58 @@ var loginUserControllerFunc = async (req, res) => {
     }
 }
 
-module.exports = { createUserControllerFunc, loginUserControllerFunc };
+const searchUserFunc = async (req, res) => {
+    let response = null;
+
+    try {
+        response = await userService.searchUser( req.body ); //aqui manda el objeto del postman
+
+        if ( response.status ) {
+            res.send({ "status": true, "message": response.msg });
+        } else {
+            res.send({ "status": false, "message": response.msg });
+        }
+
+    } catch (error) {
+        console.log(error);
+        res.send({ "status": false, "message": error.msg });
+    }
+}
+
+const updateUserFunc = async (req, res) => {
+    let response = null;
+
+    try {
+        response = await userService.updateUser( req.body ); //aqui manda el objeto del postman
+
+        if ( response.status ) {
+            res.send({ "status": true, "message": response.msg });
+        } else {
+            res.send({ "status": false, "message": response.msg });
+        }
+
+    } catch (error) {
+        console.log(error);
+        res.send({ "status": false, "message": error.msg });
+    }
+}
+
+const deleteUserFunc = async (req, res) => {
+    let response = null;
+
+    try {
+        response = await userService.deleteUser( req.body ); //aqui manda el objeto del postman
+
+        if ( response.status ) {
+            res.send({ "status": true, "message": response.msg });
+        } else {
+            res.send({ "status": false, "message": response.msg });
+        }
+
+    } catch (error) {
+        console.log(error);
+        res.send({ "status": false, "message": error.msg });
+    }
+}
+
+module.exports = { createUserControllerFunc, loginUserControllerFunc, searchUserFunc, deleteUserFunc, updateUserFunc};
